@@ -3,7 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><%= title || 'App' %></title>
+  <title><%= title ? `${title} · BugsCreator Files` : 'BugsCreator Files' %></title>
+  <meta name="description" content="<%= ((typeof metaDesc !== 'undefined' ? metaDesc : '') || '').replace(/\"/g, '&quot;') %>">
+  <link rel="canonical" href="<%= (typeof canonical !== 'undefined' ? canonical : (typeof siteUrl !== 'undefined' ? siteUrl : '')) %>">
+  <meta property="og:title" content="<%= title ? `${title} · BugsCreator Files` : 'BugsCreator Files' %>">
+  <meta property="og:description" content="<%= ((typeof metaDesc !== 'undefined' ? metaDesc : '') || '').replace(/\"/g, '&quot;') %>">
+  <meta property="og:url" content="<%= (typeof canonical !== 'undefined' ? canonical : (typeof siteUrl !== 'undefined' ? siteUrl : '')) %>">
+  <meta property="og:type" content="website">
+  <meta name="robots" content="index, follow">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="icon" href="data:," />
 </head>

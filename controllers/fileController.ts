@@ -159,7 +159,8 @@ export const getDetailsById = async (req: Request, res: Response) => {
     }
   }
 
-  return  res.render('files/detail', { title: 'File Details', file });
+  const metaDesc = `Download ${file.originalName} (${(file.size/1024).toFixed(1)} KB, ${file.mimeType}).`;
+  return  res.render('files/detail', { title: file.originalName, file, metaDesc });
 };
 
 export const getDetailsBySlug = async (req: Request, res: Response) => {
@@ -177,5 +178,6 @@ export const getDetailsBySlug = async (req: Request, res: Response) => {
     }
   }
 
-  return res.render('files/detail', { title: 'File Details', file });
+  const metaDesc = `Download ${file.originalName} (${(file.size/1024).toFixed(1)} KB, ${file.mimeType}).`;
+  return res.render('files/detail', { title: file.originalName, file, metaDesc });
 };

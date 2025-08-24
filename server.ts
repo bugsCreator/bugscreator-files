@@ -52,11 +52,19 @@ app.use(
 // Static
 app.use('/public', express.static(path.join(__dirnameSafe, 'public')));
 
-// Locals
+// Locals (SEO + session)
+const PORT = process.env.PORT || 3000;
+const SITE_URL = process.env.SITE_URL || `http://localhost:${PORT}`;
 app.use((req, res, next) => {
   res.locals.currentUser = req.session.user || null;
   res.locals.isAdmin = req.session.user?.role === 'admin';
   res.locals.flash = req.session.flash || null;
+  res.locals.siteUrl = SITE_URL;
+  // Canonical without query string
+  const pathOnly = req.originalUrl?.split('?')[0] || '/';
+  res.locals.canonical = `${SITE_URL}${pathOnly}`;
+  // Default meta description (can be overridden per-render)
+  res.locals.metaDesc = res.locals.metaDesc || 'Browse, upload, and share files. Public and private access with simple, secure links.';
   delete req.session.flash;
   next();
 });
@@ -65,6 +73,7 @@ app.use((req, res, next) => {
 import indexRoutes from './routes/index' ;
 import authRoutes from './routes/auth';
 import fileRoutes from './routes/files';
+import seoRoutes from './routes/seo';
 import adminRoutes from './routes/admin';
 
 console.log('Routes loaded:', {
@@ -74,6 +83,7 @@ console.log('Routes loaded:', {
 });
 
 app.use('/', indexRoutes);
+app.use('/', seoRoutes);
 app.use('/auth', authRoutes);
 app.use('/files', fileRoutes);
 app.use('/admin', adminRoutes);
@@ -94,7 +104,6 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
 
 export default app;

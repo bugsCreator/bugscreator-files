@@ -9,10 +9,12 @@ module.exports = {
       watch: false,
       env_file: '.env',
       env: {
-        NODE_ENV: 'development'
+        NODE_ENV: 'development',
+        PORT:"2901"
       },
       env_production: {
-        NODE_ENV: 'production'
+        NODE_ENV: 'production',
+        PORT:"2901"
       },
       // Logs
       time: true,
