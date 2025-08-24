@@ -25,7 +25,7 @@ coverage/
 .nyc_output/
 
 ### Runtime/data
-uploads/
+uploads/*
 tmp/
 temp/
 pids
