@@ -1,0 +1,53 @@
+<h1 class="text-2xl font-semibold mb-4">Upload</h1>
+<form class="bg-white p-6 shadow rounded max-w-lg" method="post" action="/files/upload" enctype="multipart/form-data">
+  <div class="mb-3">
+    <label class="block text-sm mb-1">Select File</label>
+    <label id="dropzone" class="flex items-center justify-center px-4 py-6 bg-white text-gray-700 border-2 border-dashed border-gray-300 rounded cursor-pointer hover:border-blue-400 hover:text-blue-600 transition-colors">
+      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+      <span>Choose a file to upload</span>
+      <input id="fileInput" type="file" name="file" class="hidden" required />
+    </label>
+    <p id="fileName" class="text-xs text-gray-600 mt-2"></p>
+  </div>
+  <div class="mb-4">
+    <label class="block text-sm">Access</label>
+    <select class="border w-full p-2 rounded" name="access">
+      <option value="private">Private</option>
+      <option value="public">Public</option>
+    </select>
+  </div>
+  <div class="mb-4">
+    <label class="block text-sm">Custom slug (optional)</label>
+    <input class="border w-full p-2 rounded" name="slug" placeholder="e.g. my-report-2025" pattern="[a-z0-9-]{3,64}" />
+    <p class="text-xs text-gray-500">Lowercase letters, numbers and dashes, 3-64 chars. Shareable URL will be /files/slug/your-slug</p>
+  </div>
+  <% if (typeof errors !== 'undefined' && errors.length) { %>
+    <ul class="mb-3 text-sm text-red-600 list-disc list-inside">
+      <% errors.forEach(e => { %><li><%= e.msg %></li><% }) %>
+    </ul>
+  <% } %>
+  <button class="bg-blue-600 text-white px-4 py-2 rounded">Upload</button>
+  <p class="text-xs text-gray-500 mt-2">Max size depends on server limits.</p>
+  </form>
+  <script>
+    (function(){
+      const dz = document.getElementById('dropzone');
+      const input = document.getElementById('fileInput');
+      const nameEl = document.getElementById('fileName');
+      const toggleActive = (active) => {
+        if (active) dz.classList.add('border-blue-500'); else dz.classList.remove('border-blue-500');
+      };
+      dz.addEventListener('click', () => input.click());
+      input.addEventListener('change', () => { nameEl.textContent = input.files && input.files[0] ? input.files[0].name : ''; });
+      ;['dragenter','dragover'].forEach(evt => dz.addEventListener(evt, (e)=>{ e.preventDefault(); e.stopPropagation(); toggleActive(true);}));
+      ;['dragleave','drop'].forEach(evt => dz.addEventListener(evt, (e)=>{ e.preventDefault(); e.stopPropagation(); toggleActive(false);}));
+      dz.addEventListener('drop', (e)=>{
+        const files = e.dataTransfer && e.dataTransfer.files;
+        if (files && files.length) {
+          input.files = files;
+          const ev = new Event('change');
+          input.dispatchEvent(ev);
+        }
+      });
+    })();
+  </script>

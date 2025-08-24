@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title || 'App' %></title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="data:," />
+</head>
+<body class="min-h-screen bg-gray-50 text-gray-900">
+  <nav class="bg-white shadow mb-6">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a class="font-bold" href="/">BugsCreator Files</a>
+      <div class="space-x-3">
+        <a class="text-sm hover:underline" href="/files">Files</a>
+        <% if (currentUser) { %>
+          <a class="text-sm hover:underline" href="/files/upload">Upload</a>
+          <form class="inline" action="/auth/logout" method="post">
+            <button class="text-sm text-red-600 hover:underline">Logout (<%= currentUser.username %>)</button>
+          </form>
+        <% } else { %>
+          <a class="text-sm hover:underline" href="/auth/login">Login</a>
+          <a class="text-sm hover:underline" href="/auth/register">Register</a>
+        <% } %>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-5xl mx-auto px-4">
+    <% if (flash) { %>
+      <div class="mb-4 p-3 rounded <%= flash.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' %>"><%= flash.message %></div>
+    <% } %>
+    <%- body %>
+  </main>
+
+  <footer class="mt-12 py-6 text-center text-xs text-gray-500">&copy; <%= new Date().getFullYear() %> BugsCreator</footer>
+</body>
+</html>
