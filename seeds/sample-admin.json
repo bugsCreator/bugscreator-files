@@ -1,0 +1,12 @@
+[
+  {
+    "username": "test",
+    "email": "test@test.com",
+    "passwordHash": "$2b$10$5.M58dTbff0N5y.kx7dL0eZs7jg3Pa1KugUPhjTOhxisX0/0rgj6y",
+    "role": "admin",
+    "apiKeys": [],
+    "createdAt": { "$date": "2025-08-24T07:34:58.491Z" },
+    "updatedAt": { "$date": "2025-08-24T07:34:58.491Z" },
+    "__v": 0
+  }
+]
