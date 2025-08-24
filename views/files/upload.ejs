@@ -1,0 +1,91 @@
+<h1 class="text-2xl font-semibold mb-4">Upload</h1>
+<form class="bg-white p-6 shadow rounded max-w-lg" method="post" action="/files/upload" enctype="multipart/form-data">
+  <div class="mb-3">
+    <label class="block text-sm mb-1">Select File</label>
+    <label id="dropzone" class="flex items-center justify-center px-4 py-6 bg-white text-gray-700 border-2 border-dashed border-gray-300 rounded cursor-pointer hover:border-blue-400 hover:text-blue-600 transition-colors">
+      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+      <span>Choose or drag a file here</span>
+      <input id="fileInput" type="file" name="file" class="hidden" required />
+    </label>
+    <div id="fileDetails" class="hidden mt-3">
+      <div class="bg-gray-50 border rounded p-4 flex items-start gap-4">
+        <img id="filePreview" class="hidden w-20 h-20 object-cover rounded border" alt="preview" />
+        <div class="text-sm text-gray-700">
+          <div><span class="font-medium">Name:</span> <span id="dName"></span></div>
+          <div><span class="font-medium">Size:</span> <span id="dSize"></span></div>
+          <div><span class="font-medium">Type:</span> <span id="dType"></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="mb-4">
+    <label class="block text-sm">Access</label>
+    <select class="border w-full p-2 rounded" name="access">
+      <option value="private">Private</option>
+      <option value="public">Public</option>
+    </select>
+  </div>
+  <div class="mb-4">
+    <label class="block text-sm">Custom slug (optional)</label>
+    <input class="border w-full p-2 rounded" name="slug" placeholder="e.g. my-report-2025" pattern="[a-z0-9-]{3,64}" />
+    <p class="text-xs text-gray-500">Lowercase letters, numbers and dashes, 3-64 chars. Shareable URL will be /files/slug/your-slug</p>
+  </div>
+  <% if (typeof errors !== 'undefined' && errors.length) { %>
+    <ul class="mb-3 text-sm text-red-600 list-disc list-inside">
+      <% errors.forEach(e => { %><li><%= e.msg %></li><% }) %>
+    </ul>
+  <% } %>
+  <button class="bg-blue-600 text-white px-4 py-2 rounded">Upload</button>
+  <p class="text-xs text-gray-500 mt-2">Max file size: 100 MB.</p>
+  </form>
+  <script>
+    (function(){
+      const dz = document.getElementById('dropzone');
+      const input = document.getElementById('fileInput');
+      const card = document.getElementById('fileDetails');
+      const dName = document.getElementById('dName');
+      const dSize = document.getElementById('dSize');
+      const dType = document.getElementById('dType');
+      const preview = document.getElementById('filePreview');
+      const toggleActive = (active) => {
+        if (active) dz.classList.add('border-blue-500'); else dz.classList.remove('border-blue-500');
+      };
+      const fmtBytes = (bytes) => {
+        if (bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B','KB','MB','GB','TB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+      };
+      const showDetails = (file) => {
+        if (!file) { card.classList.add('hidden'); return; }
+        dName.textContent = file.name || '';
+        dSize.textContent = fmtBytes(file.size || 0);
+        dType.textContent = file.type || 'unknown';
+        // Image preview if supported
+        if (file.type && file.type.startsWith('image/')) {
+          const url = URL.createObjectURL(file);
+          preview.src = url;
+          preview.classList.remove('hidden');
+          // Revoke later to free memory
+          setTimeout(() => URL.revokeObjectURL(url), 5000);
+        } else {
+          preview.removeAttribute('src');
+          preview.classList.add('hidden');
+        }
+        card.classList.remove('hidden');
+      };
+      dz.addEventListener('click', () => input.click());
+      input.addEventListener('change', () => { showDetails(input.files && input.files[0] ? input.files[0] : null); });
+      ;['dragenter','dragover'].forEach(evt => dz.addEventListener(evt, (e)=>{ e.preventDefault(); e.stopPropagation(); toggleActive(true);}));
+      ;['dragleave','drop'].forEach(evt => dz.addEventListener(evt, (e)=>{ e.preventDefault(); e.stopPropagation(); toggleActive(false);}));
+      dz.addEventListener('drop', (e)=>{
+        const files = e.dataTransfer && e.dataTransfer.files;
+        if (files && files.length) {
+          input.files = files;
+          const ev = new Event('change');
+          input.dispatchEvent(ev);
+        }
+      });
+    })();
+  </script>

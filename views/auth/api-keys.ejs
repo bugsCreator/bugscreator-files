@@ -1,0 +1,39 @@
+<h1 class="text-2xl font-semibold mb-4">API Keys</h1>
+
+<form class="bg-white p-4 shadow rounded mb-6" method="post" action="/auth/api-keys">
+  <div class="flex items-end gap-3">
+    <div class="flex-1">
+      <label class="block text-sm">Label (optional)</label>
+      <input name="label" class="border w-full p-2 rounded" placeholder="e.g. CI, mobile, script" />
+    </div>
+    <button class="bg-blue-600 text-white px-4 py-2 rounded">Generate</button>
+  </div>
+  <p class="text-xs text-gray-500 mt-2">The key will be shown once in a flash message. Copy and store it securely.</p>
+  <p class="text-xs text-gray-500">Use as request header <code>X-API-Key: &lt;token&gt;</code> or query <code>?api_key=&lt;token&gt;</code>.</p>
+  <p class="text-xs text-gray-500">Token format: userId.keyId.secret</p>
+</form>
+
+<div class="bg-white p-4 shadow rounded">
+  <h2 class="text-lg font-medium mb-3">Your Keys</h2>
+  <% if (!keys || keys.length === 0) { %>
+    <p class="text-gray-600">No keys yet.</p>
+  <% } else { %>
+    <ul class="divide-y">
+      <% keys.forEach(k => { %>
+        <li class="py-3 flex items-center justify-between">
+          <div class="text-sm text-gray-700">
+            <div><span class="font-medium"><%= k.label || 'Unnamed key' %></span> <% if (k.revoked) { %><span class="ml-2 text-red-600 text-xs">revoked</span><% } %></div>
+            <div class="text-xs text-gray-500">Created: <%= new Date(k.createdAt).toLocaleString() %> <% if (k.lastUsedAt) { %>• Last used: <%= new Date(k.lastUsedAt).toLocaleString() %><% } %></div>
+          </div>
+          <div>
+            <% if (!k.revoked) { %>
+              <form method="post" action="/auth/api-keys/<%= k._id %>/revoke">
+                <button class="text-red-600 hover:underline text-sm">Revoke</button>
+              </form>
+            <% } %>
+          </div>
+        </li>
+      <% }) %>
+    </ul>
+  <% } %>
+</div>
