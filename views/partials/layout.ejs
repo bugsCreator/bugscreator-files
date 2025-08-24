@@ -1,48 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><%= title ? `${title} · BugsCreator Files` : 'BugsCreator Files' %></title>
-  <meta name="description" content="<%= ((typeof metaDesc !== 'undefined' ? metaDesc : '') || '').replace(/\"/g, '&quot;') %>">
-  <link rel="canonical" href="<%= (typeof canonical !== 'undefined' ? canonical : (typeof siteUrl !== 'undefined' ? siteUrl : '')) %>">
-  <meta property="og:title" content="<%= title ? `${title} · BugsCreator Files` : 'BugsCreator Files' %>">
-  <meta property="og:description" content="<%= ((typeof metaDesc !== 'undefined' ? metaDesc : '') || '').replace(/\"/g, '&quot;') %>">
-  <meta property="og:url" content="<%= (typeof canonical !== 'undefined' ? canonical : (typeof siteUrl !== 'undefined' ? siteUrl : '')) %>">
-  <meta property="og:type" content="website">
-  <meta name="robots" content="index, follow">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="icon" href="data:," />
-</head>
-<body class="min-h-screen bg-gray-50 text-gray-900">
-  <nav class="bg-white shadow mb-6">
-    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-      <a class="font-bold" href="/">BugsCreator Files</a>
-      <div class="space-x-3">
-        <a class="text-sm hover:underline" href="/files">Files</a>
-  <% if (typeof currentUser !== 'undefined' && currentUser) { %>
-        <% if (typeof isAdmin !== 'undefined' && isAdmin) { %>
-          <a class="text-sm hover:underline text-red-700" href="/admin/users">Admin</a>
-        <% } %>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      <%= title ? `${title} · BugsCreator Files` : 'BugsCreator Files' %>
+    </title>
+    <meta name="description" content="<%= ((typeof metaDesc !== 'undefined' ?
+    metaDesc : '') || '').replace(/\"/g, '&quot;') %>">
+    <link
+      rel="canonical"
+      href="<%= (typeof canonical !== 'undefined' ? canonical : (typeof siteUrl !== 'undefined' ? siteUrl : '')) %>"
+    />
+    <meta
+      property="og:title"
+      content="<%= title ? `${title} · BugsCreator Files` : 'BugsCreator Files' %>"
+    />
+    <meta property="og:description" content="<%= ((typeof metaDesc !==
+    'undefined' ? metaDesc : '') || '').replace(/\"/g, '&quot;') %>">
+    <meta
+      property="og:url"
+      content="<%= (typeof canonical !== 'undefined' ? canonical : (typeof siteUrl !== 'undefined' ? siteUrl : '')) %>"
+    />
+    <meta property="og:type" content="website" />
+    <meta name="robots" content="index, follow" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="theme-color" content="#ed0c64" />
+    <link rel="icon" type="image/svg+xml" href="/public/favicon.ico" />
+    <link
+      rel="icon"
+      type="image/png"
+      href="/public/favicon.ico"
+      sizes="192x192"
+    />
+    <link rel="apple-touch-icon" href="/public/apple-touch-icon.png" />
+    <link rel="mask-icon" href="/public/favicon.ico" color="#2563eb" />
+    <style>
+      .logo-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+      .logo-container > span {
+        position: absolute;
+        left: 1.6rem;
+        letter-spacing: 0.5px;
+        font-family: Poppins, Montserrat, Inter, sans-serif;
+        font-size: 1rem;
+        font-style: italic;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen bg-gray-50 text-gray-900">
+    <nav class="bg-white shadow mb-6">
+      <div
+        class="max-w-5xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3"
+      >
+        <a class="font-bold text-lg logo-container" href="/"
+          ><img
+            src="/public/favicon.ico"
+            alt="BugsCreator Files"
+            class="h-8 inline"
+          /><span>Files</span></a
+        >
+        <div class="flex flex-wrap items-center gap-3">
+          <a class="text-sm hover:underline" href="/files">Files</a>
+          <% if (typeof currentUser !== 'undefined' && currentUser) { %> <% if
+          (typeof isAdmin !== 'undefined' && isAdmin) { %>
+          <a class="text-sm hover:underline text-red-700" href="/admin/users"
+            >Admin</a
+          >
+          <% } %>
           <a class="text-sm hover:underline" href="/files/upload">Upload</a>
           <form class="inline" action="/auth/logout" method="post">
-            <button class="text-sm text-red-600 hover:underline">Logout (<%= currentUser.username %>)</button>
+            <button class="text-sm text-red-600 hover:underline">
+              Logout (<%= currentUser.username %>)
+            </button>
           </form>
-        <% } else { %>
+          <% } else { %>
           <a class="text-sm hover:underline" href="/auth/login">Login</a>
           <a class="text-sm hover:underline" href="/auth/register">Register</a>
-        <% } %>
+          <% } %>
+        </div>
       </div>
-    </div>
-  </nav>
+    </nav>
 
-  <main class="max-w-5xl mx-auto px-4">
-  <% if (typeof flash !== 'undefined' && flash) { %>
-      <div class="mb-4 p-3 rounded <%= flash.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' %>"><%= flash.message %></div>
-    <% } %>
-    <%- body %>
-  </main>
+    <main class="max-w-5xl mx-auto px-4">
+      <% if (typeof flash !== 'undefined' && flash) { %>
+      <div
+        class="mb-4 p-3 rounded <%= flash.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' %>"
+      >
+        <%= flash.message %>
+      </div>
+      <% } %> <%- body %>
+    </main>
 
-  <footer class="mt-12 py-6 text-center text-xs text-gray-500">&copy; <%= new Date().getFullYear() %> BugsCreator</footer>
-</body>
+    <footer class="mt-12 py-6 text-center text-xs text-gray-500">
+      &copy; <%= new Date().getFullYear() %> BugsCreator
+    </footer>
+  </body>
 </html>

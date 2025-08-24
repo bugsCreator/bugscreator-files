@@ -1,4 +1,4 @@
-<h1 class="text-2xl font-semibold mb-4">File Details</h1>
+<h1 class="text-xl sm:text-2xl font-semibold mb-4">File Details</h1>
 <div class="bg-white p-6 shadow rounded">
   <div class="grid gap-2">
     <div><span class="font-medium">Name:</span> <%= file.originalName %></div>
@@ -14,13 +14,13 @@
     <div><span class="font-medium">Created:</span> <%= new Date(file.createdAt).toLocaleString() %></div>
     <div><span class="font-medium">Updated:</span> <%= new Date(file.updatedAt).toLocaleString() %></div>
   </div>
-  <div class="mt-4">
+  <div class="mt-4 flex flex-col sm:flex-row sm:items-center gap-3">
     <% if (file.slug) { %>
-      <a class="bg-blue-600 text-white px-4 py-2 rounded" href="/files/slug/<%= file.slug %>">Download</a>
-      <a class="ml-3 text-sm text-gray-700 hover:underline" href="/files/slug/<%= file.slug %>/details">Permalink</a>
+      <a class="bg-blue-600 text-white px-4 py-2 rounded text-center sm:inline-block" href="/files/slug/<%= file.slug %>">Download</a>
+      <a class="text-sm text-gray-700 hover:underline" href="/files/slug/<%= file.slug %>/details">Permalink</a>
     <% } else { %>
-      <a class="bg-blue-600 text-white px-4 py-2 rounded" href="/files/<%= file._id %>/download">Download</a>
+      <a class="bg-blue-600 text-white px-4 py-2 rounded text-center sm:inline-block" href="/files/<%= file._id %>/download">Download</a>
     <% } %>
-    <a class="ml-3 text-sm text-gray-700 hover:underline" href="/files">Back to files</a>
+    <a class="text-sm text-gray-700 hover:underline" href="/files">Back to files</a>
   </div>
 </div>

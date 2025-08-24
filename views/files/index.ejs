@@ -1,4 +1,4 @@
-<h1 class="text-2xl font-semibold mb-4">Files</h1>
+<h1 class="text-xl sm:text-2xl font-semibold mb-4">Files</h1>
 
 <h2 class="text-xl font-medium mt-6 mb-2">Public Files</h2>
 <div class="grid gap-3">
@@ -6,16 +6,18 @@
     <p class="text-gray-600">No public files.</p>
   <% } %>
   <% for (const f of (publicFiles || [])) { %>
-    <div class="bg-white p-4 shadow rounded flex items-center justify-between">
-      <div>
+    <div class="bg-white p-4 shadow rounded flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+      <div class="min-w-0">
         <div class="font-medium"><%= f.originalName %></div>
         <div class="text-xs text-gray-500"><%= (f.size/1024).toFixed(1) %> KB • <%= f.mimeType %></div>
       </div>
+      <div>
       <% if (f.slug) { %>
-        <a class="text-blue-600 hover:underline text-sm" href="/files/slug/<%= f.slug %>">Download</a>
+        <a class="text-blue-600 hover:underline text-sm inline-block" href="/files/slug/<%= f.slug %>">Download</a>
       <% } else { %>
-        <a class="text-blue-600 hover:underline text-sm" href="/files/<%= f._id %>/download">Download</a>
+        <a class="text-blue-600 hover:underline text-sm inline-block" href="/files/<%= f._id %>/download">Download</a>
       <% } %>
+      </div>
     </div>
   <% } %>
 </div>
@@ -26,16 +28,18 @@
     <p class="text-gray-600">No private files.</p>
   <% } %>
   <% for (const f of (privateFiles || [])) { %>
-    <div class="bg-white p-4 shadow rounded flex items-center justify-between">
-      <div>
+    <div class="bg-white p-4 shadow rounded flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+      <div class="min-w-0">
         <div class="font-medium"><%= f.originalName %></div>
         <div class="text-xs text-gray-500"><%= (f.size/1024).toFixed(1) %> KB • <%= f.mimeType %></div>
       </div>
+      <div>
       <% if (f.slug) { %>
-        <a class="text-blue-600 hover:underline text-sm" href="/files/slug/<%= f.slug %>">Download</a>
+        <a class="text-blue-600 hover:underline text-sm inline-block" href="/files/slug/<%= f.slug %>">Download</a>
       <% } else { %>
-        <a class="text-blue-600 hover:underline text-sm" href="/files/<%= f._id %>/download">Download</a>
+        <a class="text-blue-600 hover:underline text-sm inline-block" href="/files/<%= f._id %>/download">Download</a>
       <% } %>
+      </div>
     </div>
   <% } %>
 </div>
