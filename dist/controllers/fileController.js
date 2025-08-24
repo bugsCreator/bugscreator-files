@@ -67,7 +67,7 @@ const postUpload = async (req, res) => {
     if (created.slug) {
         return res.redirect(`/files/slug/${created.slug}/details`);
     }
-    res.redirect(`/files/${created.id}`);
+    return res.redirect(`/files/${created.id}`);
 };
 exports.postUpload = postUpload;
 const listFiles = async (req, res) => {
@@ -155,7 +155,7 @@ const getDetailsById = async (req, res) => {
             return res.status(403).render('error', { title: 'Forbidden', error: { message: 'Access denied' } });
         }
     }
-    res.render('files/detail', { title: 'File Details', file });
+    return res.render('files/detail', { title: 'File Details', file });
 };
 exports.getDetailsById = getDetailsById;
 const getDetailsBySlug = async (req, res) => {
@@ -172,6 +172,6 @@ const getDetailsBySlug = async (req, res) => {
             return res.status(403).render('error', { title: 'Forbidden', error: { message: 'Access denied' } });
         }
     }
-    res.render('files/detail', { title: 'File Details', file });
+    return res.render('files/detail', { title: 'File Details', file });
 };
 exports.getDetailsBySlug = getDetailsBySlug;

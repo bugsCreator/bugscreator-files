@@ -9,6 +9,6 @@ const router = (0, express_1.Router)();
 router.get('/', async (req, res) => {
     console.log('Home route hit');
     const recentPublic = await File_1.default.find({ access: 'public' }).sort({ createdAt: -1 }).limit(10).lean();
-    res.render('index', { title: 'Home', recentPublic });
+    return res.render('index', { title: 'Home', recentPublic });
 });
 exports.default = router;

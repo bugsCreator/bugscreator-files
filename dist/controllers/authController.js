@@ -37,7 +37,7 @@ exports.logout = exports.postLogin = exports.validateLogin = exports.postRegiste
 const express_validator_1 = require("express-validator");
 const User_1 = __importStar(require("../models/User"));
 const getLogin = (req, res) => {
-    res.render('auth/login', { title: 'Login' });
+    return res.render('auth/login', { title: 'Login' });
 };
 exports.getLogin = getLogin;
 const getRegister = (req, res) => {
@@ -55,15 +55,22 @@ const postRegister = async (req, res) => {
         return res.status(400).render('auth/register', { title: 'Register', errors: errors.array() });
     }
     const { username, email, password } = req.body;
+    // Admin-only creation, except bootstrap: if there are no users, allow creating the first user as admin.
+    const totalUsers = await User_1.default.estimatedDocumentCount();
+    if (totalUsers > 0 && req.session.user?.role !== 'admin') {
+        req.session.flash = { type: 'error', message: 'Only admins can create new users.' };
+        return res.redirect('/auth/login');
+    }
     const existing = await User_1.default.findOne({ $or: [{ username }, { email }] });
     if (existing) {
         return res.status(400).render('auth/register', { title: 'Register', errors: [{ msg: 'User already exists' }] });
     }
     const passwordHash = await (0, User_1.hashPassword)(password);
-    const user = await User_1.default.create({ username, email, passwordHash });
-    req.session.user = { id: user.id, username: user.username };
+    const role = totalUsers === 0 ? 'admin' : 'user';
+    const user = await User_1.default.create({ username, email, passwordHash, role });
+    req.session.user = { id: user.id, username: user.username, role: user.role };
     req.session.flash = { type: 'success', message: 'Registered successfully' };
-    res.redirect('/');
+    return res.redirect('/');
 };
 exports.postRegister = postRegister;
 exports.validateLogin = [
@@ -80,14 +87,14 @@ const postLogin = async (req, res) => {
     if (!user || !(await user.verifyPassword(password))) {
         return res.status(400).render('auth/login', { title: 'Login', errors: [{ msg: 'Invalid credentials' }] });
     }
-    req.session.user = { id: user.id, username: user.username };
+    req.session.user = { id: user.id, username: user.username, role: user.role };
     req.session.flash = { type: 'success', message: 'Logged in' };
-    res.redirect('/');
+    return res.redirect('/');
 };
 exports.postLogin = postLogin;
 const logout = (req, res) => {
     req.session.destroy(() => {
-        res.redirect('/');
+        return res.redirect('/');
     });
 };
 exports.logout = logout;

@@ -55,6 +55,7 @@ app.use('/public', express.static(path.join(__dirnameSafe, 'public')));
 // Locals
 app.use((req, res, next) => {
   res.locals.currentUser = req.session.user || null;
+  res.locals.isAdmin = req.session.user?.role === 'admin';
   res.locals.flash = req.session.flash || null;
   delete req.session.flash;
   next();
@@ -64,6 +65,7 @@ app.use((req, res, next) => {
 import indexRoutes from './routes/index' ;
 import authRoutes from './routes/auth';
 import fileRoutes from './routes/files';
+import adminRoutes from './routes/admin';
 
 console.log('Routes loaded:', {
   indexRoutes: typeof indexRoutes,
@@ -74,6 +76,7 @@ console.log('Routes loaded:', {
 app.use('/', indexRoutes);
 app.use('/auth', authRoutes);
 app.use('/files', fileRoutes);
+app.use('/admin', adminRoutes);
 
 // 404
 app.use((req: Request, res: Response) => {

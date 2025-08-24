@@ -1,14 +1,14 @@
 import { Router } from 'express';
 import { getLogin, getRegister, postLogin, postRegister, validateLogin, validateRegister, logout } from '../controllers/authController';
 import { managePage, createKey, revokeKey, validateCreate } from '../controllers/apiKeyController';
-import { requireAuth } from '../middlewares/auth';
+import { requireAuth, requireAdminOrFirstUser } from '../middlewares/auth';
 
 const router = Router();
 
 router.get('/login', getLogin);
-router.get('/register', getRegister);
+router.get('/register', requireAdminOrFirstUser, getRegister);
 router.post('/login', validateLogin, postLogin);
-router.post('/register', validateRegister, postRegister);
+router.post('/register', requireAdminOrFirstUser, validateRegister, postRegister);
 router.post('/logout', logout);
 // API keys management
 router.get('/api-keys', requireAuth, managePage);
