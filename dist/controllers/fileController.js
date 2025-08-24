@@ -71,10 +71,11 @@ const postUpload = async (req, res) => {
 };
 exports.postUpload = postUpload;
 const listFiles = async (req, res) => {
+    console.log('listFiles handler invoked');
     const userId = req.session.user?.id;
     const publicFiles = await File_1.default.find({ access: 'public' }).sort({ createdAt: -1 }).lean();
     const privateFiles = userId ? await File_1.default.find({ owner: userId, access: 'private' }).sort({ createdAt: -1 }).lean() : [];
-    res.render('files/index', { title: 'Files', publicFiles, privateFiles });
+    return res.render('files/index', { title: 'Files', publicFiles, privateFiles });
 };
 exports.listFiles = listFiles;
 const streamDownload = async (req, res) => {
@@ -84,7 +85,11 @@ const streamDownload = async (req, res) => {
         return res.status(404).render('404', { title: 'Not Found' });
     // Access control
     if (file.access === 'private') {
-        if (!req.session.user || req.session.user.id !== file.owner.toString()) {
+        const apiUser = req.apiUser;
+        const ownerId = file.owner.toString();
+        const isOwnerSession = req.session.user && req.session.user.id === ownerId;
+        const isOwnerApi = apiUser && apiUser.id === ownerId;
+        if (!isOwnerSession && !isOwnerApi) {
             return res.status(403).render('error', { title: 'Forbidden', error: { message: 'Access denied' } });
         }
     }
@@ -112,7 +117,11 @@ const streamBySlug = async (req, res) => {
         return res.status(404).render('404', { title: 'Not Found' });
     // Access control
     if (file.access === 'private') {
-        if (!req.session.user || req.session.user.id !== file.owner.toString()) {
+        const apiUser = req.apiUser;
+        const ownerId = file.owner.toString();
+        const isOwnerSession = req.session.user && req.session.user.id === ownerId;
+        const isOwnerApi = apiUser && apiUser.id === ownerId;
+        if (!isOwnerSession && !isOwnerApi) {
             return res.status(403).render('error', { title: 'Forbidden', error: { message: 'Access denied' } });
         }
     }
@@ -138,7 +147,11 @@ const getDetailsById = async (req, res) => {
         return res.status(404).render('404', { title: 'Not Found' });
     // For private files, only owner can view details
     if (file.access === 'private') {
-        if (!req.session.user || req.session.user.id !== file.owner.toString()) {
+        const apiUser = req.apiUser;
+        const ownerId = file.owner.toString();
+        const isOwnerSession = req.session.user && req.session.user.id === ownerId;
+        const isOwnerApi = apiUser && apiUser.id === ownerId;
+        if (!isOwnerSession && !isOwnerApi) {
             return res.status(403).render('error', { title: 'Forbidden', error: { message: 'Access denied' } });
         }
     }
@@ -151,7 +164,11 @@ const getDetailsBySlug = async (req, res) => {
     if (!file)
         return res.status(404).render('404', { title: 'Not Found' });
     if (file.access === 'private') {
-        if (!req.session.user || req.session.user.id !== file.owner.toString()) {
+        const apiUser = req.apiUser;
+        const ownerId = file.owner.toString();
+        const isOwnerSession = req.session.user && req.session.user.id === ownerId;
+        const isOwnerApi = apiUser && apiUser.id === ownerId;
+        if (!isOwnerSession && !isOwnerApi) {
             return res.status(403).render('error', { title: 'Forbidden', error: { message: 'Access denied' } });
         }
     }

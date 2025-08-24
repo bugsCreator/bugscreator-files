@@ -12,6 +12,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const method_override_1 = __importDefault(require("method-override"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const express_ejs_layouts_1 = __importDefault(require("express-ejs-layouts"));
+const apiKey_1 = require("./middlewares/apiKey");
 dotenv_1.default.config();
 // Session types are augmented in types/session.d.ts
 const app = (0, express_1.default)();
@@ -32,6 +33,8 @@ app.use(express_1.default.urlencoded({ extended: true }));
 app.use(express_1.default.json());
 app.use((0, method_override_1.default)('_method'));
 app.use((0, morgan_1.default)('dev'));
+// API key auth (non-intrusive; attaches req.apiUser if present)
+app.use(apiKey_1.apiKeyAuth);
 // Sessions
 const SESSION_SECRET = process.env.SESSION_SECRET || 'dev_secret_change_me';
 app.use((0, express_session_1.default)({
@@ -54,6 +57,11 @@ app.use((req, res, next) => {
 const index_1 = __importDefault(require("./routes/index"));
 const auth_1 = __importDefault(require("./routes/auth"));
 const files_1 = __importDefault(require("./routes/files"));
+console.log('Routes loaded:', {
+    indexRoutes: typeof index_1.default,
+    authRoutes: typeof auth_1.default,
+    fileRoutes: typeof files_1.default,
+});
 app.use('/', index_1.default);
 app.use('/auth', auth_1.default);
 app.use('/files', files_1.default);

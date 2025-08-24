@@ -7,6 +7,7 @@ import mongoose from 'mongoose';
 import methodOverride from 'method-override';
 import dotenv from 'dotenv';
 import ejsLayouts from 'express-ejs-layouts';
+import { apiKeyAuth } from './middlewares/apiKey';
 
 dotenv.config();
 
@@ -33,6 +34,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(methodOverride('_method'));
 app.use(morgan('dev'));
+// API key auth (non-intrusive; attaches req.apiUser if present)
+// app.use(apiKeyAuth);
 
 // Sessions
 const SESSION_SECRET = process.env.SESSION_SECRET || 'dev_secret_change_me';
@@ -58,9 +61,15 @@ app.use((req, res, next) => {
 });
 
 // Routes
-import indexRoutes from './routes/index';
+import indexRoutes from './routes/index' ;
 import authRoutes from './routes/auth';
 import fileRoutes from './routes/files';
+
+console.log('Routes loaded:', {
+  indexRoutes: typeof indexRoutes,
+  authRoutes: typeof authRoutes,
+  fileRoutes: typeof fileRoutes,
+});
 
 app.use('/', indexRoutes);
 app.use('/auth', authRoutes);
@@ -68,7 +77,7 @@ app.use('/files', fileRoutes);
 
 // 404
 app.use((req: Request, res: Response) => {
-  res.status(404).render('404', { title: 'Not Found' });
+  return res.status(404).render('404', { title: 'Not Found' });
 });
 
 // Error handler
@@ -76,9 +85,9 @@ app.use((req: Request, res: Response) => {
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.error(err);
   if (req.accepts('html')) {
-    res.status(500).render('error', { title: 'Error', error: err });
+    return res.status(500).render('error', { title: 'Error', error: err });
   } else {
-    res.status(500).json({ error: 'Internal Server Error' });
+    return res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 

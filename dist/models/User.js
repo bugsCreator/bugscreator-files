@@ -39,14 +39,48 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.hashPassword = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const crypto_1 = __importDefault(require("crypto"));
 const UserSchema = new mongoose_1.Schema({
     username: { type: String, required: true, unique: true, trim: true, minlength: 3, maxlength: 30 },
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
-    passwordHash: { type: String, required: true }
+    passwordHash: { type: String, required: true },
+    apiKeys: [
+        new mongoose_1.Schema({
+            label: { type: String, trim: true },
+            hash: { type: String, required: true },
+            createdAt: { type: Date, default: Date.now },
+            lastUsedAt: { type: Date },
+            revoked: { type: Boolean, default: false }
+        }, { _id: true })
+    ]
 }, { timestamps: true });
 UserSchema.methods.verifyPassword = function (password) {
     return bcrypt_1.default.compare(password, this.passwordHash);
 };
 const hashPassword = async (password) => bcrypt_1.default.hash(password, 10);
 exports.hashPassword = hashPassword;
+UserSchema.methods.generateApiKey = async function (label) {
+    const secret = crypto_1.default.randomBytes(24).toString('base64url');
+    const hash = await bcrypt_1.default.hash(secret, 10);
+    this.apiKeys.push({ label, hash, createdAt: new Date(), revoked: false });
+    await this.save();
+    const key = this.apiKeys[this.apiKeys.length - 1];
+    // Token format: userId.keyId.secret
+    const token = `${this._id.toString()}.${key._id.toString()}.${secret}`;
+    return { token, keyId: key._id.toString() };
+};
+UserSchema.methods.revokeApiKey = async function (keyId) {
+    const key = this.apiKeys.id(keyId);
+    if (key) {
+        key.revoked = true;
+        await this.save();
+    }
+};
+UserSchema.methods.touchApiKey = async function (keyId) {
+    const key = this.apiKeys.id(keyId);
+    if (key) {
+        key.lastUsedAt = new Date();
+        await this.save();
+    }
+};
 exports.default = mongoose_1.default.model('User', UserSchema);

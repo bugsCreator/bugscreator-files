@@ -2,8 +2,10 @@
 
 <h2 class="text-xl font-medium mt-6 mb-2">Public Files</h2>
 <div class="grid gap-3">
-  <% if ((publicFiles||[]).length === 0) { %><p class="text-gray-600">No public files.</p><% } %>
-  <% (publicFiles||[]).forEach(f => { %>
+  <% if ((publicFiles || []).length === 0) { %>
+    <p class="text-gray-600">No public files.</p>
+  <% } %>
+  <% for (const f of (publicFiles || [])) { %>
     <div class="bg-white p-4 shadow rounded flex items-center justify-between">
       <div>
         <div class="font-medium"><%= f.originalName %></div>
@@ -15,13 +17,15 @@
         <a class="text-blue-600 hover:underline text-sm" href="/files/<%= f._id %>/download">Download</a>
       <% } %>
     </div>
-  <% }) %>
-  </div>
+  <% } %>
+</div>
 
 <h2 class="text-xl font-medium mt-8 mb-2">My Private Files</h2>
 <div class="grid gap-3">
-  <% if ((privateFiles||[]).length === 0) { %><p class="text-gray-600">No private files.</p><% } %>
-  <% (privateFiles||[]).forEach(f => { %>
+  <% if ((privateFiles || []).length === 0) { %>
+    <p class="text-gray-600">No private files.</p>
+  <% } %>
+  <% for (const f of (privateFiles || [])) { %>
     <div class="bg-white p-4 shadow rounded flex items-center justify-between">
       <div>
         <div class="font-medium"><%= f.originalName %></div>
@@ -33,5 +37,5 @@
         <a class="text-blue-600 hover:underline text-sm" href="/files/<%= f._id %>/download">Download</a>
       <% } %>
     </div>
-  <% }) %>
+  <% } %>
 </div>

@@ -66,14 +66,15 @@ export const postUpload = async (req: Request, res: Response) => {
   if (created.slug) {
     return res.redirect(`/files/slug/${created.slug}/details`);
   }
-  res.redirect(`/files/${created.id}`);
+  return res.redirect(`/files/${created.id}`);
 };
 
 export const listFiles = async (req: Request, res: Response) => {
+  console.log('listFiles handler invoked');
   const userId = req.session.user?.id;
   const publicFiles = await File.find({ access: 'public' }).sort({ createdAt: -1 }).lean();
   const privateFiles = userId ? await File.find({ owner: userId, access: 'private' }).sort({ createdAt: -1 }).lean() : [];
-  res.render('files/index', { title: 'Files', publicFiles, privateFiles });
+  return res.render('files/index', { title: 'Files', publicFiles, privateFiles });
 };
 
 export const streamDownload = async (req: Request, res: Response) => {
@@ -83,7 +84,11 @@ export const streamDownload = async (req: Request, res: Response) => {
 
   // Access control
   if (file.access === 'private') {
-    if (!req.session.user || req.session.user.id !== file.owner.toString()) {
+    const apiUser = (req as any).apiUser as { id: string } | undefined;
+    const ownerId = file.owner.toString();
+    const isOwnerSession = req.session.user && req.session.user.id === ownerId;
+    const isOwnerApi = apiUser && apiUser.id === ownerId;
+    if (!isOwnerSession && !isOwnerApi) {
       return res.status(403).render('error', { title: 'Forbidden', error: { message: 'Access denied' } });
     }
   }
@@ -113,7 +118,11 @@ export const streamBySlug = async (req: Request, res: Response) => {
 
   // Access control
   if (file.access === 'private') {
-    if (!req.session.user || req.session.user.id !== file.owner.toString()) {
+    const apiUser = (req as any).apiUser as { id: string } | undefined;
+    const ownerId = file.owner.toString();
+    const isOwnerSession = req.session.user && req.session.user.id === ownerId;
+    const isOwnerApi = apiUser && apiUser.id === ownerId;
+    if (!isOwnerSession && !isOwnerApi) {
       return res.status(403).render('error', { title: 'Forbidden', error: { message: 'Access denied' } });
     }
   }
@@ -141,12 +150,16 @@ export const getDetailsById = async (req: Request, res: Response) => {
 
   // For private files, only owner can view details
   if (file.access === 'private') {
-    if (!req.session.user || req.session.user.id !== file.owner.toString()) {
+    const apiUser = (req as any).apiUser as { id: string } | undefined;
+    const ownerId = file.owner.toString();
+    const isOwnerSession = req.session.user && req.session.user.id === ownerId;
+    const isOwnerApi = apiUser && apiUser.id === ownerId;
+    if (!isOwnerSession && !isOwnerApi) {
       return res.status(403).render('error', { title: 'Forbidden', error: { message: 'Access denied' } });
     }
   }
 
-  res.render('files/detail', { title: 'File Details', file });
+  return  res.render('files/detail', { title: 'File Details', file });
 };
 
 export const getDetailsBySlug = async (req: Request, res: Response) => {
@@ -155,10 +168,14 @@ export const getDetailsBySlug = async (req: Request, res: Response) => {
   if (!file) return res.status(404).render('404', { title: 'Not Found' });
 
   if (file.access === 'private') {
-    if (!req.session.user || req.session.user.id !== file.owner.toString()) {
+    const apiUser = (req as any).apiUser as { id: string } | undefined;
+    const ownerId = file.owner.toString();
+    const isOwnerSession = req.session.user && req.session.user.id === ownerId;
+    const isOwnerApi = apiUser && apiUser.id === ownerId;
+    if (!isOwnerSession && !isOwnerApi) {
       return res.status(403).render('error', { title: 'Forbidden', error: { message: 'Access denied' } });
     }
   }
 
-  res.render('files/detail', { title: 'File Details', file });
+  return res.render('files/detail', { title: 'File Details', file });
 };

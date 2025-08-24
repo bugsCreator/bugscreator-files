@@ -3,7 +3,7 @@ import { body, validationResult } from 'express-validator';
 import User, { hashPassword } from '../models/User';
 
 export const getLogin = (req: Request, res: Response) => {
-  res.render('auth/login', { title: 'Login' });
+  return res.render('auth/login', { title: 'Login' });
 };
 
 export const getRegister = (req: Request, res: Response) => {
@@ -30,7 +30,7 @@ export const postRegister = async (req: Request, res: Response) => {
   const user = await User.create({ username, email, passwordHash });
   req.session.user = { id: user.id, username: user.username };
   req.session.flash = { type: 'success', message: 'Registered successfully' };
-  res.redirect('/');
+  return res.redirect('/');
 };
 
 export const validateLogin = [
@@ -50,11 +50,11 @@ export const postLogin = async (req: Request, res: Response) => {
   }
   req.session.user = { id: user.id, username: user.username };
   req.session.flash = { type: 'success', message: 'Logged in' };
-  res.redirect('/');
+  return res.redirect('/');
 };
 
 export const logout = (req: Request, res: Response) => {
   req.session.destroy(() => {
-    res.redirect('/');
+    return res.redirect('/');
   });
 };

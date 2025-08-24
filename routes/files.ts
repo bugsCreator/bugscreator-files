@@ -1,13 +1,13 @@
 import { Router } from 'express';
 import { getUpload, listFiles, postUpload, streamDownload, streamBySlug, validateUpload, getDetailsById, getDetailsBySlug } from '../controllers/fileController';
 import { requireAuth } from '../middlewares/auth';
-import { uploadSingle } from '../middlewares/upload';
+import { uploadSingle, handleUploadError } from '../middlewares/upload';
 
 const router = Router();
 
 router.get('/', listFiles);
 router.get('/upload', requireAuth, getUpload);
-router.post('/upload', requireAuth, uploadSingle, validateUpload, postUpload);
+router.post('/upload', requireAuth, uploadSingle, handleUploadError, validateUpload, postUpload);
 // Slug routes first to avoid being captured by :id
 router.get('/slug/:slug/details', getDetailsBySlug);
 router.get('/slug/:slug', streamBySlug);
